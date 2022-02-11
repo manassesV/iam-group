@@ -1,0 +1,48 @@
+AWSTempleteVersion:
+Parameters:
+   UserName:
+       Description: UserName to create user iam
+       Type: String
+       Default: Manasses
+   Password:
+       Description: Password to crete user iam
+       Type: String
+Resources:
+    IamUser:
+        Type: AWS::IAM::User
+        Properties: 
+          Groups: 
+             - String
+          LoginProfile: 
+             Password: !Ref Password
+             PasswordResetRequired: true
+          Path: /
+          Policies: 
+             - PolicyName: giveaccesstoqueueonly
+               PolicyDocument:
+                  Version: 2012-10-17
+                  Statement:
+                    - Effect: Allow
+                      Action:
+                        - sqs:*
+                      Resource:
+                        - !GetAtt myqueue.Arn
+             - PolicyName: giveacccesstotopiconly
+               PolicyDocument:
+                  Version: 2012-10-17
+                  Statement: 
+                    - Effect: Allow
+                      Action:
+                        - sns:*
+                      Resource:
+                        - !Ref mytopic
+                    - Effect: Deny
+                      Action:
+                        - sns:*
+                      NotResource:
+                        - !Ref mytopic
+          Tags: 
+            - Key: author
+              Value: Manasses
+          UserName: !Ref UserName
+
